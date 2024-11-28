@@ -11,6 +11,31 @@ email = "rzbsys@unist.ac.kr"
 otp_code = "132435"
 nickname = "MeLU"
 
+def create_fake_auth(app):
+    with app.app_context():
+        Auth().create(email, otp_code)
+
+# Write email in user db
+def create_fake_user(app):
+    with app.app_context():
+        User().create(email, nickname)
+
+def create_user_request_environment(api_client, create_auth : bool = True, create_user : bool = True):
+    if create_auth:
+        create_fake_auth(app)
+    if create_user:
+        create_fake_user(app)
+    with api_client.session_transaction() as session:
+        auth_manager = AuthManager(session)
+        auth_manager.update_auth_state(AuthState.OTP_VERIFY)
+        auth_manager.enroll_user_info(User(email=email))
+
+def create_user_login_but_not_registered_environment(api_client):
+    # create_fake_user(app)
+    with api_client.session_transaction() as session:
+        auth_manager = AuthManager(session)
+        auth_manager.update_auth_state(AuthState.NEED_REGISTER)
+        auth_manager.enroll_user_info(User(email=email))
 
 @pytest.fixture(scope="session")
 def api():
@@ -28,15 +53,6 @@ def reset_db(api):
         db.create_all()
     with api_client.session_transaction() as session:
         session.clear()
-
-# @pytest.fixture(scope="function")
-# def session(api):
-#     api_client, socketio_client = api
-#     return session
-
-# @pytest.fixture(scope="function")
-# def auth_manager(session):
-#     return AuthManager(session)
 
 
 # 1. request_verify
@@ -74,9 +90,6 @@ def test_no_key_in_json(api):
 
 # 2. check_verify
 # Before start, write data in db
-def create_fake_auth(app):
-    with app.app_context():
-        Auth().create(email, otp_code)
 
 # Failure verifying
 def test_wrong_otp(api):
@@ -98,45 +111,31 @@ def test_blank_otp(api):
 def test_not_enough_keys(api):
     api_client, socketio_client = api
     res = api_client.post("/api/taxi_auth/check_verify", json={"otp": otp_code})
-    assert res.status_code == 400
+    assert res.status_code == 401
     res = api_client.post("/api/taxi_auth/check_verify", json={"email" : email})
     assert res.status_code == 400
 
 # Success verifying
 # Not registered email
 def test_valid_otp_but_not_registered(api):
-    create_fake_auth(app)
     api_client, socketio_client = api
 
-    with api_client.session_transaction() as session:
-        auth_manager = AuthManager(session)
-        auth_manager.update_auth_state(AuthState.OTP_VERIFY)
-        auth_manager.enroll_user_info(User(email=email))
+    create_user_request_environment(api_client, create_user=False)
 
     res = api_client.post("/api/taxi_auth/check_verify", json={"email": email, "otp": otp_code})
     assert res.status_code == 200
-    # assert res.get_json().get('registered') == False
+    assert res.get_json().get('registered') == False
 
     # Should not be logged in
     with api_client.session_transaction() as session:
         assert session.get('is_authenticated') is None
         assert session.get('email') is None
 
-# Write email in user db
-def create_fake_user(app):
-    with app.app_context():
-        User().create(email, nickname)
 
 # Now, registered email
 def test_valid_otp_and_registered(api):
     api_client, socketio_client = api
-
-    create_fake_auth(app)
-    create_fake_user(app)
-    with api_client.session_transaction() as session:
-        auth_manager = AuthManager(session)
-        auth_manager.update_auth_state(AuthState.OTP_VERIFY)
-        auth_manager.enroll_user_info(User(email=email))
+    create_user_request_environment(api_client)
 
     res = api_client.post("/api/taxi_auth/check_verify", json={"otp": otp_code})
     assert res.status_code == 200, res.get_json()
@@ -158,6 +157,29 @@ def test_blank_nickname_in_register(api):
     api_client, socketio_client = api
     res = api_client.post("/api/taxi_auth/register", json={"email": email, "nickname": ""})
     assert res.status_code == 401
+
+def test_duplicate_in_register(api):
+    api_client, socketio_client = api
+    create_user_request_environment(api_client)
+
+    # duplicate email
+    res = api_client.post("/api/taxi_auth/register", json={"email": email, "nickname": "NONONO"})
+    assert res.status_code == 401
+    #duplicate nickname
+    res = api_client.post("/api/taxi_auth/register", json={"email": "unknown@unist.ac.kr", "nickname": nickname})
+    assert res.status_code == 401
+
+def test_check_login_in_register(api):
+    api_client, socketio_client = api
+    create_user_login_but_not_registered_environment(api_client)
+    res = api_client.post('/api/taxi_auth/register', json={"email": email, "nickname": nickname})
+    assert res.status_code == 200, res.get_json()
+
+    with api_client.session_transaction() as session:
+        assert session.get('user_info') is not None
+        # assert session.get('is_authenticated') == 'True'
+        # assert session.get('email') == email
+
 
 """
 1. User가 email로 otp 보내달라 요청을 날림
