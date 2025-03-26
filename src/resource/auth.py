@@ -24,6 +24,7 @@ def request_verify():
     auth = Auth().create(email=req_data.get("email"), otp=otp_code)
     send_mail(auth.email, "TaxiHeXA 인증번호", f"Your OTP code is: {otp_code}. It is valid for 5 minutes.")
 
+    # enroll_user_info 의 인자가 User 오브젝트이기 때문
     email_user = User(
         email=req_data.get("email"),
     )
@@ -66,7 +67,7 @@ def check_verify():
 @auth_router.route("/logout", methods=["POST"])
 @handle_exceptions
 def logout():
-    auth_manager.logout()
+    auth_manager.clear()
     return {"msg": "Logout success."}, 200
 
 
