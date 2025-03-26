@@ -61,6 +61,11 @@ class User(db.Model):
     def select_by_nickname(cls, nickname: str) -> Union["User", None]:
         return cls.query.filter(cls.nickname == nickname).first()
 
+    @classmethod
+    def select_by_id(cls, id: int) -> Union["User", None]:
+        return cls.query.filter(cls.id == id).first()
+
+
     def as_dict(self) -> dict:
         return {
             "id": self.id,
