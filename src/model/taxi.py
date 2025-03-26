@@ -17,13 +17,12 @@ class TaxiPool(db.Model):
     room_id = db.Column(db.String(30), nullable=True, default=lambda: str(uuid4()))
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.now)  # 생성시간
 
-    def create(self, start_position: str, end_position: str, total_people: int, start_time: str, creator_id: str, creator_nickname: str) -> "TaxiPool":
+    def create(self, start_position: str, end_position: str, total_people: int, start_time: str, creator_id: str) -> "TaxiPool":
         self.start_position = start_position
         self.end_position = end_position
         self.total_people = total_people
         self.start_time = start_time
         self.creator_id = creator_id
-        self.creator_nickname = creator_nickname
         db.session.add(self)
         db.session.commit()
         return self
@@ -31,7 +30,7 @@ class TaxiPool(db.Model):
     
     @classmethod
     def select_taxi_pools_by_day(cls, start_date: datetime, end_date: datetime, order_by_start_time_asc: bool = True) -> list["TaxiPool"]:
-        taxi_pools = cls.query.filter(start_date < cls.start_time, cls.start_time < end_date)
+        taxi_pools = cls.query.filter(start_date <= cls.start_time, cls.start_time <= end_date)
         if order_by_start_time_asc:
             taxi_pools = taxi_pools.order_by(cls.start_time.asc())
         taxi_pools = taxi_pools.all()
@@ -52,7 +51,7 @@ class TaxiPool(db.Model):
             "status": self.status,
             # "creator_id": self.creator_id,
             # "room_id": self.room_id,
-            "creator_nickname": self.creator_nickname,
+            # "creator_nickname": self.creator_nickname,
             "created_at": self.created_at,
         }
 

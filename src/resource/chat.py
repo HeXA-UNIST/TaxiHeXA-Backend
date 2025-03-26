@@ -21,7 +21,6 @@ def connect(data):
 
 @socketio.on("status")
 def server_status(data):
-
     emit("status", {"status": "ok"})
 
 
@@ -36,7 +35,7 @@ def auth_info(data):
 @auth_required_on_socketio(auth_manager)
 def enter_room(data):
     user_rooms = rooms(request.sid)
-    if len(user_rooms) > 1:
+    if len(user_rooms) >= 1:
         socketio.emit("info", {"msg": "방을 목록을 초기화합니다."})
         for room in user_rooms:
             leave_room(room)
@@ -57,7 +56,7 @@ def enter_room(data):
             "created_at": chat.created_at,
         }
         res.append(c)
-    socketio.emit("prev_chats", res, room=room_id)
+    socketio.emit("prev_chats", res)
 
 
 @socketio.on("send_message")
@@ -65,6 +64,7 @@ def enter_room(data):
 @auth_required_on_socketio(auth_manager)
 def chat_message(data):
     user_rooms = rooms(request.sid)
+    # TODO : user_rooms의 길이가 0인경우를 고려해야함.
     if len(user_rooms) > 1:
         socketio.emit("error", {"msg": "비정상적인 접근입니다. 방을 목록을 초기화합니다."})
         for room in user_rooms:

@@ -9,7 +9,6 @@ app, socketio = create_app(config)
 
 app.register_blueprint(router)
 
-
 @app.route("/ping")
 def ping():
     return "pong"

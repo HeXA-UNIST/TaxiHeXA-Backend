@@ -34,11 +34,12 @@ def get_taxi_info():
     get_taxi_info_schema.validate(data)
     data = get_taxi_info_schema.load(data)
     # TODO : 이거 고치기 완
-    start_datetime = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
+    start_datetime = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=data.get("day"))
     end_datetime = start_datetime + timedelta(days=1)
     # start_datetime = data.get("start_datetime")
     # end_datetime = data.get("end_datetime")
-    
+    print(start_datetime, end_datetime)
+
     taxi_pools = TaxiPool.select_taxi_pools_by_day(start_datetime, end_datetime) # List[TaxiPool]
     
     # TODO : nickname 가져오는 로직 추가해야함. 완완
@@ -51,12 +52,14 @@ def get_taxi_info():
             {
                 **taxi_pool.as_dict(),
                 "num_participation": PoolMember.count_pool_member(taxi_pool.id),
-                "creator_nickname": User.select_by_id(id).nickname,
+                "creator_nickname": User.select_by_id(taxi_pool.creator_id).nickname,
             }
             for taxi_pool in taxi_pools
         ]
     }
     return result, 200
+
+# TODO : 개별 택시팟 아이디로 검색
 
 
 @taxi_router.route("/participate", methods=["POST"])
