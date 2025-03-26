@@ -20,8 +20,9 @@ class CreateTaxiInfoSchema(ma.Schema):
 
 
 class GetTaxiInfoSchema(ma.Schema):
-    start_datetime = ma.DateTime(required=True, validate=[validate_day_form])
-    end_datetime = ma.DateTime(required=True, validate=[validate_day_form])
+    day = ma.Int(required=True)
+    # start_datetime = ma.DateTime(required=True, validate=[validate_day_form])
+    # end_datetime = ma.DateTime(required=True, validate=[validate_day_form])
 
 
 class TaxiParticipateTaxiSchema(ma.Schema):

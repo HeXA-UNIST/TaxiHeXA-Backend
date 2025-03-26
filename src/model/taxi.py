@@ -14,7 +14,6 @@ class TaxiPool(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)  # 출발 시간
     status = db.Column(db.Integer, nullable=False, default=0)  # 상태
     creator_id = db.Column(db.Integer, nullable=False)  # 생성자
-    creator_nickname = db.Column(db.String(30), nullable=False)  # 생성자
     room_id = db.Column(db.String(30), nullable=True, default=lambda: str(uuid4()))
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.now)  # 생성시간
 
@@ -29,6 +28,7 @@ class TaxiPool(db.Model):
         db.session.commit()
         return self
 
+    
     @classmethod
     def select_taxi_pools_by_day(cls, start_date: datetime, end_date: datetime, order_by_start_time_asc: bool = True) -> list["TaxiPool"]:
         taxi_pools = cls.query.filter(start_date < cls.start_time, cls.start_time < end_date)
