@@ -13,29 +13,35 @@ otp_manager = OTPManager()
 auth_manager = AuthManager(session)
 
 
+# 인증번호 요청
 @auth_router.route("/request_verify", methods=["POST"])
 @handle_exceptions
 def request_verify():
+    # 올바른 형식인지 확인
     req_data = request.get_json()
     request_verify_schema.validate(req_data)
     req_data = request_verify_schema.load(req_data)
 
+    # 인증코드 만들어서 전송
     otp_code = otp_manager.create_safe_random_otp_code()
     auth = Auth().create(email=req_data.get("email"), otp=otp_code)
     send_mail(auth.email, "TaxiHeXA 인증번호", f"Your OTP code is: {otp_code}. It is valid for 5 minutes.")
 
-    # enroll_user_info 의 인자가 User 오브젝트이기 때문
+    # 가상 유저 인스턴스 생성 후 session 에 등록
     email_user = User(
         email=req_data.get("email"),
     )
     auth_manager.enroll_user_info(email_user)
+    # auth state 변경
     auth_manager.update_auth_state(AuthState.OTP_VERIFY)
     return {"msg": "OTP sent successfully."}, 200
 
 
+# 인증번호 확인
 @auth_router.route("/check_verify", methods=["POST"])
 @handle_exceptions
 def check_verify():
+    # 올바른 형식인지 확인
     req_data = request.get_json()
     check_verify_schema.validate(req_data)
     req_data = check_verify_schema.load(req_data)

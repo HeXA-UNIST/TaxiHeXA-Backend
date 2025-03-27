@@ -37,7 +37,7 @@ class TaxiPool(db.Model):
         return taxi_pools
 
     @classmethod
-    def select_taxi_pools_by_id(cls, id: str) -> Union["TaxiPool", None]:
+    def select_taxi_pool_by_id(cls, id: str) -> Union["TaxiPool", None]:
         taxi_pool = cls.query.filter(cls.id == id).first()
         return taxi_pool
 

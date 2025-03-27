@@ -64,7 +64,14 @@ def enter_room(data):
 @auth_required_on_socketio(auth_manager)
 def chat_message(data):
     user_rooms = rooms(request.sid)
-    # TODO : user_rooms의 길이가 0인경우를 고려해야함.
+    # TODO : user_rooms의 길이가 0인경우를 고려해야함. 대충 완
+    if len(user_rooms) == 0:
+        socketio.emit(
+            "error",
+            {"msg": "참여 중인 방이 없습니다. 메시지를 전송할 수 없습니다."},
+            to=request.sid
+        )
+        return
     if len(user_rooms) > 1:
         socketio.emit("error", {"msg": "비정상적인 접근입니다. 방을 목록을 초기화합니다."})
         for room in user_rooms:
