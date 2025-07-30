@@ -2,10 +2,10 @@
 set -e
 
 # ── 1. DB가 올라올 때까지 대기 ─────────────────────────────
-echo "⏳ Waiting for postgres at $DATABASE_URI"
+echo "⏳ Waiting for postgres at $SQLALCHEMY_DATABASE_URI"
 while ! python - <<EOF 2>/dev/null
 import sys, time, sqlalchemy as sa, os, urllib.parse
-uri = os.environ['DATABASE_URI']
+uri = os.environ['SQLALCHEMY_DATABASE_URI']
 try:
     sa.create_engine(uri).connect().close()
 except Exception as e:

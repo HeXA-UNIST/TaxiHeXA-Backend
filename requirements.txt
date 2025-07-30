@@ -1,44 +1,22 @@
-# flask
-# flask-admin
-# flask-sqlalchemy
-# flask-cors
-# flask-migrate
-# flask-session
-# flask-socketio
-# flask_mail
-# flask-marshmallow
-# python-dotenv
-# redis
-# marshmallow-sqlalchemy
-# pytest
-
-# Flask 핵심 패키지
-Flask==2.3.3
-flask-admin==1.6.1
-flask-sqlalchemy==3.0.5
-flask-cors==4.0.0
-flask-migrate==4.0.5
-flask-session==0.5.0
+Flask
+Flask-CORS
+Flask-SQLAlchemy==3.0.5
+python-dotenv
+authlib
+requests
+Flask-Session
+redis
+gunicorn
+pypdf
+Flask-Migrate
+Werkzeug
+beautifulsoup4
+psycopg2-binary
+flask-admin
 flask-socketio==5.3.6
-flask_mail==0.9.1
-
-# Marshmallow 관련 (버전 호환성 맞춤)
+flask_mail
 marshmallow==3.19.0
 flask-marshmallow==0.15.0
 marshmallow-sqlalchemy==0.29.0
-
-# WSGI 서버 (프로덕션용)
-gunicorn==21.2.0
 eventlet==0.33.3
 
-# 환경변수 관리
-python-dotenv==1.0.0
-
-# Redis
-redis==5.0.1
-
-# 테스트
-pytest==7.4.3
-
-# 데이터베이스 (필요한 경우)
-psycopg2-binary==2.9.7

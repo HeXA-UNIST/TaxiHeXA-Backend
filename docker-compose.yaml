@@ -7,6 +7,8 @@ services:
     restart: always
     networks:
       - hexa_taxi_network
+    volumes:
+      - ./volume/redis:/data
       
   db:
     image: postgres:alpine
@@ -18,6 +20,8 @@ services:
       - POSTGRES_DB=postgres
     networks:
       - hexa_taxi_network
+    volumes:
+      - ./volume/postgres:/var/lib/postgresql/data
 
   backend:
     build: .
@@ -42,5 +46,5 @@ services:
 
 networks:
   hexa_taxi_network:
-    name: dshs_susiroga_network
+    name: hexa_taxi_network
     driver: bridge

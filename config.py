@@ -1,5 +1,5 @@
 import os
-from redis import Redis
+import redis
 from dotenv import load_dotenv
 
 load_dotenv()
