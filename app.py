@@ -13,5 +13,9 @@ app.register_blueprint(router)
 def ping():
     return "pong"
 
+@app.route('/health')
+def health_check():
+    return {'status': 'healthy'}
+
 if __name__ == "__main__":
-    socketio.run(app, "0.0.0.0", 8081, debug=True)
+    socketio.run(app, "0.0.0.0", 5000, debug=True)
