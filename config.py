@@ -23,8 +23,12 @@ class Config(object):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
-    SESSION_TYPE = os.getenv("SESSION_TYPE")
-    SESSION_REDIS = Redis(os.getenv("SESSION_REDIS_HOST"), int(os.getenv("SESSION_REDIS_PORT")))
+    SESSION_TYPE = "redis"
+    SESSION_PERMANENT = False
+    SESSION_USE_SIGNER = True    
+    SESSION_REDIS = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"))
+    REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
+
 
 
 class DevelopmentConfig(Config):

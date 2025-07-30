@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: hexa_taxi_redis
+    restart: always
+    networks:
+      - hexa_taxi_network
+      
+  db:
+    image: postgres:alpine
+    restart: always
+    container_name: hexa_taxi_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=HEXA_TAXI@POSTGRES
+      - POSTGRES_DB=postgres
+    networks:
+      - hexa_taxi_network
+
+  backend:
+    build: .
+    container_name: hexa_taxi_backend
+    environment:
+      - SECRET_KEY=your secret key
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:HEXA_TAXI%40POSTGRES@db:5432/postgres
+      - MAIL_SERVER=your_mail_server
+      - MAIL_PORT=your_mail_port
+      - MAIL_USE_TLS=your_mail_use_tls
+      - MAIL_USERNAME=your_mail_username
+      - MAIL_PASSWORD=your_mail_password
+      - MAIL_DEFAULT_SENDER=TaxiHeXA
+      
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "10001:8000"
+    networks:
+      - hexa_taxi_network
+
+networks:
+  hexa_taxi_network:
+    name: dshs_susiroga_network
+    driver: bridge
