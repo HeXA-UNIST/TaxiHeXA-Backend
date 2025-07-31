@@ -45,7 +45,7 @@ def check_verify():
     req_data = request.get_json()
     check_verify_schema.validate(req_data)
     req_data = check_verify_schema.load(req_data)
-
+    print(auth_manager.auth_state)
     if auth_manager.auth_state != AuthState.OTP_VERIFY:
         return {"msg": "email정보가 존재하지 않습니다."}, 401
 

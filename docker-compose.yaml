@@ -27,15 +27,16 @@ services:
     build: .
     container_name: hexa_taxi_backend
     environment:
-      - SECRET_KEY=your secret key
+      - SECRET_KEY=TaXIHeXAScetKey!@$!@#!@%$!@%!#!@$%!@%4123412314
       - SQLALCHEMY_DATABASE_URI=postgresql://postgres:HEXA_TAXI%40POSTGRES@db:5432/postgres
-      - MAIL_SERVER=your_mail_server
-      - MAIL_PORT=your_mail_port
-      - MAIL_USE_TLS=your_mail_use_tls
-      - MAIL_USERNAME=your_mail_username
-      - MAIL_PASSWORD=your_mail_password
+      - MAIL_SERVER=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USE_TLS=True
+      - MAIL_USERNAME=hexa.unist@gmail.com
+      - MAIL_PASSWORD=ubym bopf rbjn hmvq
       - MAIL_DEFAULT_SENDER=TaxiHeXA
-      
+      - REDIS_URL=redis://redis:6379
+  
     depends_on:
       - db
       - redis

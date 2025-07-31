@@ -1,5 +1,5 @@
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from src.error import OTPCodeIsNotSameError, OTPExpiredError, EmailNotFoundInOTPError, MaxRetriesError, AlreadyVerifiedError
 
 from src.model import Auth
@@ -21,6 +21,6 @@ class OTPManager:
         elif not otp_code == auth.otp:
             auth.update_num_tries()
             raise OTPCodeIsNotSameError
-        elif auth.created_at + timedelta(seconds=timeout) < datetime.now():
+        elif auth.created_at + timedelta(seconds=timeout) < datetime.now(timezone.utc):
             raise OTPExpiredError
         auth.update_is_verified(True)

@@ -25,7 +25,10 @@ class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
     SESSION_TYPE = "redis"
     SESSION_PERMANENT = False
-    SESSION_USE_SIGNER = True    
+    SESSION_USE_SIGNER = True   
+    SESSION_COOKIE_HTTPONLY=True
+    SESSION_COOKIE_SECURE=True
+    SESSION_COOKIE_SAMESITE='None'
     SESSION_REDIS = redis.from_url(os.getenv("REDIS_URL", "redis://localhost:6379"))
     REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None)
 
