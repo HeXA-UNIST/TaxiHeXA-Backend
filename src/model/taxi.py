@@ -14,7 +14,7 @@ class TaxiPool(db.Model):
     start_time = db.Column(db.DateTime, nullable=False)  # 출발 시간
     status = db.Column(db.Integer, nullable=False, default=0)  # 상태
     creator_id = db.Column(db.Integer, nullable=False)  # 생성자
-    room_id = db.Column(db.String(30), nullable=True, default=lambda: str(uuid4()))
+    room_id = db.Column(db.String(100), nullable=True, default=lambda: str(uuid4()))
     created_at = db.Column(db.DateTime(timezone=True), default=datetime.now)  # 생성시간
 
     def create(self, start_position: str, end_position: str, total_people: int, start_time: str, creator_id: str) -> "TaxiPool":
